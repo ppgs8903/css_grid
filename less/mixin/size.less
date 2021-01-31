@@ -1,0 +1,81 @@
+@widthList: 18, 50, 240;
+@heightList: 40, 48;
+
+@spacingList: 5, 10, 12, 15, 16, 20, 24, 40, 60;
+@directionShort: l, r, t, b;
+@direction: left, right, top, bottom;
+
+@wli: length(@widthList)+1;
+@hli: length(@heightList)+1;
+@dlj: length(@direction)+1;
+@slj: length(@spacingList)+1;
+
+.generateWidth(@i) when (@i < @wli) {
+  .widths(extract(@widthList, @i));
+  .generateWidth(@i+1);
+}
+
+.generateHeight(@i) when (@i < @hli) {
+  .heights(extract(@heightList, @i));
+  .generateHeight(@i+1);
+}
+.widths(@size) {
+  .w-@{size} {
+    width: unit((@size/10), rem);
+  }
+}
+.heights(@size) {
+  .h-@{size} {
+    height: unit((@size/10), rem);
+  }
+}
+
+.generateSpacingDirection(@j,@i) when (@j < @dlj) {
+  .spacing(extract(@directionShort, @j), extract(@direction, @j), extract(@spacingList, @i));
+  .generateSpacingDirection(@j+1, @i);
+}
+.generateSpacing(@i) when (@i < @slj) {
+  .spacingUnit(extract(@spacingList, @i));
+  .generateSpacingDirection(1, @i);
+  .generateSpacing(@i+1);
+}
+
+.spacingUnit(@size) {
+  .p-@{size} {
+    padding: unit((@size/10), rem);
+  }
+  .rem-@{size} {
+    padding-left: unit((@size/10), rem);
+    padding-right: unit((@size/10), rem);
+  }
+  .py-@{size} {
+    padding-top: unit((@size/10), rem);
+    padding-bottom: unit((@size/10), rem);
+  }
+  .m-@{size} {
+    margin: unit((@size/10), rem);
+  }
+  .mx-@{size} {
+    margin-left: unit((@size/10), rem);
+    margin-right: unit((@size/10), rem);
+  }
+  .my-@{size} {
+    margin-top: unit((@size/10), rem);
+    margin-bottom: unit((@size/10), rem);
+  }
+}
+.spacing(@directionShort,@direction,@size) {
+  .p@{directionShort}-@{size} {
+    padding-@{direction}: unit((@size/10), rem);
+  }
+
+  .m@{directionShort}-@{size} {
+    margin-@{direction}: unit((@size/10), rem);
+  }
+}
+
+.generateWidth(1);
+.generateHeight(1);
+.generateSpacing(1);
+
+

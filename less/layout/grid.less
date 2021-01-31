@@ -1,0 +1,207 @@
+@import "../base/util.less";
+
+/* 变量声明
+    1200
+    992
+    768
+ */
+// 类型
+@screenSizeArray: lg m sm;
+
+// 屏幕的阈值
+@screen-lg: 1200px;
+@screen-md: 992px;
+@screen-sm: 768px;
+
+// container 容器的宽度
+@container-lg-width: 1170px;
+@container-md-width: 970px;
+@container-sm-width: 750px;
+
+// 列宽
+@grid-gutter-width: 30px;
+
+// 总的列数
+@grid-rows: 9;
+@grid-columns: 9;
+
+
+//.nm-g {
+//  display: grid;
+//  //24 系统
+//  grid-template-rows: repeat(@grid-columns 1fr);
+//}
+
+/* 实现 */
+.mark-container() {
+  // container 容器的实现
+  .nm-container {
+    .container-common-style();
+    // 清除浮动
+    &:extend(.cf all);
+
+    // 小屏幕 container 的宽度
+    @media (min-width: @screen-sm) {
+      width: @container-sm-width;
+    }
+
+    // 中屏幕 container 的宽度
+    @media (min-width: @screen-md) {
+      width: @container-md-width;
+    }
+
+    // 大屏幕 container 的宽度
+    @media (min-width: @screen-lg) {
+      width: @container-lg-width;
+    }
+  }
+
+  // container-fluid 容器的实现
+  .nm-container-fluid {
+    .container-common-style();
+    &:extend(.cf all);
+  }
+
+  // 混合
+  .container-common-style() {
+    // 容器外部
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: @grid-gutter-width * (1/2);
+    padding-right: @grid-gutter-width * (1/2);
+  }
+}
+.mark-container();
+
+.make-row(@type, @index-item, @selector) {
+  .rows(@index) when (@index <= @grid-rows) {
+    .nm-g {
+      &>:nth-child(@{index})@{selector} {
+        grid-row: span @index-item;
+      }
+    }
+  //  // 递归调用
+    .rows(@index+1);
+  }
+  //// 递归调用
+  .rows(1);
+}
+
+.make-col (@type, @index-item, @c-selector) {
+  .cols(@c-index) when (@c-index <= @grid-rows) {
+    .nm-g {
+      &>:nth-child(@{c-index})@{c-selector} {
+        grid-column: span @index-item;
+      }
+    }
+    //  // 递归调用
+    .cols(@c-index+1);
+  }
+  //// 递归调用
+  .cols(1);
+}
+
+.make-grid (@type) {
+  //.col(@index) when (@index <= @grid-columns) {
+  //  // 拼接
+  //  @selector: ~".col-@{type}-@{index}"; // col-xs-1
+  //  .nm-g {
+  //    &:nth-child(@{index})@{selector} {
+  //      grid-column: span @index;
+  //    }
+  //  }
+  //  // 递归调用
+  //  .col(@index+1);
+  //}
+  //.col(1); // 1 ==> .col-xs-1
+
+  .loop-col(@c, @i: 1) when (@i =< @c) {
+    @c-selector: ~".col-@{type}-@{i}"; // col-xs-1{
+    .make-col(@type, @i, @c-selector);
+    .loop-col(@c, (@i + 1));
+  }
+  .loop-col(@grid-columns);
+
+  .loop-row(@r, @j: 1) when (@j =< @r) {
+    @selector: ~".row-@{type}-@{j}"; // col-xs-1{
+    .make-row(@type, @j, @selector);
+    .loop-row(@r, (@j + 1));
+  }
+  .loop-row(@grid-rows);
+
+  //.row(@index) when (@index <= @grid-rows) {
+  //  @index-item: @index;
+  //  @selector: ~".row-@{type}-@{index}"; // col-xs-1{
+  //  .make-row(@type, @index-item);
+  //  // 拼接
+  //  //@selector: ~".row-@{type}-@{index}"; // col-xs-1
+  //  //.nm-g {
+  //  //  &:nth-child(@{index})@{selector} {
+  //  //    grid-row: span @index;
+  //  //  }
+  //  //}
+  //  //// 递归调用
+  //  .row(@index+1);
+  //}
+  //.row(1); // 1 ==> .col-xs-1
+}
+
+// 媒体查询阶段 小屏幕的情况
+@media only screen and (min-width: 1px) and (max-width: @screen-sm) {
+    .make-grid(sm);
+}
+
+// 媒体查询阶段 中屏幕的情况
+@media only screen and (min-width:  @screen-sm) and (min-width: @screen-md) {
+  // .col-md-1 ...... .col-md-12
+  // .col-md-offset-1 ...... .col-md-offset-12
+  .make-grid(md);
+}
+
+// 媒体查询阶段 大屏幕的情况
+@media only screen and (min-width: @screen-md) {
+  // .col-lg-1 ...... .col-lg-12
+  // .col-lg-offset-1 ...... .col-lg-offset-12
+  .make-grid(lg);
+}
+
+// 2. 行的设置
+.make-content() {
+  .nm-g {
+    display: grid;
+    grid-template-rows: repeat(@grid-rows, 1fr);
+    grid-template-columns: repeat(@grid-columns, 1fr);
+    margin-left: -@grid-gutter-width * (1/2); // -15px
+    margin-right: -@grid-gutter-width * (1/2);
+  }
+}
+.make-content();
+
+// 3.列的实现
+// 公共样式  1,2,3,4,5,6,7,8,9,10,11,12  .col-xs-1 ... col-xs-12
+.make-grid-columns() {
+  .col(@index) {
+    // @index  2     1
+    @selector: ~".col-xs-@{index}, .col-sm-@{index}, .col-md-@{index}, .col-lg-@{index}";
+    .col(@index+1, @selector);
+  }
+  //     2       1
+  .col(@index, @list) when (@index <= @grid-columns) {
+    // 变量拼接
+    @selector: ~"@{list},.col-xs-@{index}, .col-sm-@{index}, .col-md-@{index}, .col-lg-@{index}"; // 1,2 ==> 1,2,3
+    // 调用自己
+    .col(@index+1, @selector);
+  }
+  .col(@index, @list) when (@index > @grid-columns) {
+    @{list} {
+      padding-left: @grid-gutter-width * (1/2);
+      padding-right: @grid-gutter-width * (1/2);
+      position: relative;
+      min-height: 1px;
+      float: left;
+    }
+  }
+  .col(1);
+}
+.make-grid-columns();
+

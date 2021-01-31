@@ -1,0 +1,19 @@
+@import "../mixin/color.less";
+
+.card {
+  display: flex;
+  flex: 1;
+  flex-flow: column wrap;
+  border-radius: 0.46rem;
+  &:extend(.shadow all);
+  & .card-header {
+    padding: 1.6rem 2rem;
+    background: @light;
+    border-bottom: 1px solid @secondary;
+    &:extend(.wes all);
+    .color-font-mixin();
+  }
+  & .card-body {
+    padding: 1.25rem;
+  }
+}

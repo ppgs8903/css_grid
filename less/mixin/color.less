@@ -1,0 +1,67 @@
+@gray-light: #f2f2f2;
+
+@primary: #4e73df;
+@success: #1cc88a;
+@info: #36b9cc;
+@warn: #f6c23e;
+@danger: #e74a3b;
+@secondary: #858796;
+@light: #f8f9fc;
+@dark: #5a5c69;
+
+// 字体颜色
+.color-font-mixin() {
+  &.success {
+    color: @success;
+  }
+  &.error {
+    color: @danger;
+  }
+  &.info {
+    color: @info;
+  }
+  &.warn {
+    color: @warn;
+  }
+}
+
+// card 左侧的
+.color-border-left-mixin(){
+  &.success {
+    border-left-color: @success;
+  }
+  &.error {
+    border-left-color: @danger;
+  }
+  &.info {
+    border-left-color: @info;
+  }
+  &.warn {
+    border-left-color: @warn;
+  }
+}
+
+// 不同深度的颜色
+.loop-color-c(@cn, @c, @i) when (@i =< 9) {
+  @co: @i * 100;
+  @name: ~".@{cn}-@{co}";
+  @{name} {
+    color: @c;
+  }
+  .loop-color-c(@cn, shade(@c, (@co/10*1%)), @i + 1);
+}
+
+// 不同深度的颜色
+.loop-color-b(@cn, @c, @i) when (@i =< 9) {
+  @co: @i * 100;
+  @name: ~".@{cn}-@{co}";
+  @{name} {
+    background: @c;
+  }
+  .loop-color-b(@cn, shade(@c, (@co/10*1%)), @i + 1);
+}
+
+.loop-color-c('text-gray', @light, 1);
+
+//.loop-color-b('bg-gray', @light, 1);
+.loop-color-b('bg-gray', @dark, 1);
